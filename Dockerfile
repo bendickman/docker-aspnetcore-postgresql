@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:2.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 COPY *.csproj ./
@@ -7,7 +7,7 @@ RUN dotnet restore dockerapi.csproj
 COPY . ./
 RUN dotnet publish dockerapi.csproj -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:2.1 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 
 WORKDIR /app
 

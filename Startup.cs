@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using dockerapi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 
 namespace dockerapi
@@ -39,23 +30,14 @@ namespace dockerapi
                 )
             );
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers();
             services.AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc("v1", new Info
+                    c.SwaggerDoc("v1", new OpenApiInfo
                     {
-                        Title = "Web API",
-                        Version = "v1",
-                        Description = "ASP.NET Core Web API with Docker and PostgreSql",
-                        TermsOfService = "None",
-                        Contact = new Contact
-                        {
-                            Name = "John Smith",
-                        },
+                        Title = "Blog API",
+                        Description = ".NET 6 Web API with Docker and PostgreSql"
                     });
-                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                    c.IncludeXmlComments(xmlPath);
                 });
         }
 
@@ -77,7 +59,11 @@ namespace dockerapi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web API V1");
             });
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(opts =>
+            {
+                opts.MapControllers();
+            });
         }
     }
 #pragma warning restore CS1591
