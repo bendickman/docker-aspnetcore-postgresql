@@ -1,17 +1,36 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using dockerapi.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
-namespace dockerapi
-{
-    public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+builder.Services.AddDbContext<ApiDbContext>(options =>
+    options.UseNpgsql(
+        connectionString
+    )
+);
+
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(c =>
     {
-        public static void Main(string[] args)
+        c.SwaggerDoc("v1", new OpenApiInfo
         {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+            Title = "Blog API",
+            Description = ".NET 6 Web API with Docker and PostgreSql"
+        });
+    });
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
-}
+var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web API V1");
+});
+app.UseRouting();
+app.UseEndpoints(opts =>
+{
+    opts.MapControllers();
+});
+
+app.Run();

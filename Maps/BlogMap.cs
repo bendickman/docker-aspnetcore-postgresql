@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 namespace dockerapi.Maps{
-    #pragma warning disable CS1591
        public class BlogMap
     {
         public BlogMap(EntityTypeBuilder<Blog> entityBuilder)
@@ -18,5 +17,4 @@ namespace dockerapi.Maps{
             entityBuilder.Property(x => x.Description).HasColumnName("description");
         }
     }
-    #pragma warning restore CS1591
 }
