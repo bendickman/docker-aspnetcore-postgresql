@@ -1,7 +1,7 @@
 using dockerapi.Models;
 namespace dockerapi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/blog")]
     [ApiController]
     public class BlogController : ControllerBase
     {
@@ -13,26 +13,42 @@ namespace dockerapi.Controllers
         }
 
         [HttpGet]
-        public object Get()
+        [ProducesResponseType(200)]
+        public IActionResult Get()
         {
-            return _context.Blogs.Where(b => b.Title.Contains("Title")).Select((c) => new
-            {
-                Id = c.Id,
-                Title = c.Title,
-                Description = c.Description
-            }).ToList();
+            var blogPosts = _context.Blogs.Where(b => b.Title.Contains("Title"));
+
+            return Ok(blogPosts);
         }
 
         [HttpGet("{title}")]
-        public object GetByTitle(string title)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetByTitle(string title)
         {
-            return _context.Blogs.Where(b => b.Title == title).Select((c) => new
+            var blogPosts = _context.Blogs.Where(b => b.Title == title);
+
+            if (!blogPosts?.Any() ?? true)
             {
-                Id = c.Id,
-                Title = c.Title,
-                Description = c.Description
-            }).ToList();
+                return NotFound(title);
+            }
+
+            return Ok(blogPosts);
         }
 
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetById(int id)
+        {
+            var blogPost = _context.Blogs.FirstOrDefault(b => b.Id == id);
+
+            if (blogPost is null)
+            {
+                return NotFound(id);
+            }
+
+            return Ok(blogPost);
+        }
     }
 }
